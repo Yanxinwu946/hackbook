@@ -1,40 +1,28 @@
-# Shell Aliases and Functions
-
-### Writeup
-
-Check out my [writeup](https://senderend.medium.com/my-oscp-efficiency-aliases-and-functions-bd82a91b147f) for a more in-depth walkthru of each of these commands
-
-### Instructions
-
-add these to the end of your .zshrc file, then start a new terminal (or source the .rc file)
-
-```bash
-#-------------aliases and functions by sender https://github.com/allendemoura --------------------
-# shared history config
-setopt inc_append_history
-#setopt share_history
-
-# custom history search by entered command
-bindkey "^[OA" history-beginning-search-backward
-bindkey "^[OB" history-beginning-search-forward
-
-# shift+enter moves to end of command
-bindkey '^[OM' end-of-line
-
-# custom vars
-myip=$(ip addr show tun0 | grep -oP 'inet \K[\d.]+')
+把下面内容添加到用户的 `.zshrc` 文件中
+```
+# -------------------- Custom Variables --------------------
+myip=$(ip addr show tun0 | grep -oP 'inet \K[\d.]+') 
+myip0=$(ip addr show eth0 | grep -oP 'inet \K[\d.]+') 
+myip1=$(ip addr show eth1 | grep -oP 'inet \K[\d.]+') 
 smbAddress="\\\\\\${myip}\\share"
 
-# efficiency aliases
-alias lla='ls -lah'
-alias oscp='cd ~/Documents/OSCP'
-function mkcd() { mkdir -p "$1" && cd "$1"; }
-alias f='function _myfind() { root="${2:-/}"; find "$root" -iname "*$1*" 2>/dev/null; }; _myfind'
-alias ff='function _myfind2() { root="${2:-/}"; find "$root" -iname "$1" 2>/dev/null; }; _myfind2'
-ketch() { nc -lvnp "${1:-443}"; }
-rketch() { rlwrap nc -lvnp "${1:-443}"; }
-wketch() { stty raw -echo; (stty size; cat) | nc -lvnp "${1:-443}"; }
-alias pse='rlwrap impacket-psexec'
-alias smbserver='echo -ne "\033]0;SMBserv\007"; echo "net use x: $smbAddress /user:sender password"; impacket-smbserver share . -username sender -password password -smb2support'
-function hc() { hashcat $1 /usr/share/wordlists/rockyou.txt $@ -O}
+# -------------------- Efficiency Aliases --------------------
+alias lla='ls -lah --color=auto' 
+alias oscp='cd ~/OSCP'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias py='python3'
+alias sshkeygen='ssh-keygen -t rsa -b 4096'
+
+# -------------------- Custom Functions --------------------
+mkcd() { mkdir -p "$1" && cd "$1"; } 
+f() { find "${2:-/}" -iname "*$1*" 2>/dev/null; }
+ff() { find "${2:-/}" -iname "$1" 2>/dev/null; }
+hc() { hashcat "$1" /usr/share/wordlists/rockyou.txt "${@:2}" -O; }
+httphere() { python3 -m http.server "${1:-80}"; }
+smbserver() {
+    echo -ne "\033]0;SMBserv\007"
+    echo "net use x: $smbAddress /user:sender password"
+    impacket-smbserver share . -username sender -password password -smb2support
+}
 ```
