@@ -20,7 +20,7 @@ if [ ! -d "/usr/local/share/privEsc" ]; then
     sudo mkdir -p /usr/local/share/privEsc
 fi
 
-echo "正在将 privEsc 目录的文件复制到 /usr/local/share/privEsc..."
-rsync -av --exclude='*.md' ./privEsc/ /usr/local/share/privEsc/
+echo "正在将 privEsc 目录下的文件复制到 /usr/local/share/privEsc..."
+find ./privEsc -type f ! -name "*.md" -exec cp --parents {} /usr/local/share/privEsc/ \;
 
 echo "所有操作完成！"
